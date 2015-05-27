@@ -20,7 +20,7 @@ CREATE TABLE Route
 (
 	id INT NOT NULL AUTO_INCREMENT,
 	year INT NOT NULL,
-	price_factor DOUBLE NOT NULL,
+	price INT NOT NULL,
 	start INT NOT NULL,
 	destination INT NOT NULL,
 	PRIMARY KEY(id),
@@ -105,12 +105,31 @@ CREATE TABLE Ticket
 );
 
 /*
-	Setup constraints
-*/
-
-/*
 	Setup procedures
 */
+
+DELIMITER //
+
+/* for testing purpose (remove later) */
+CREATE PROCEDURE get_passengers()
+BEGIN
+	SELECT * FROM Passenger;
+END //
+
+CREATE PROCEDURE create_reservation(flight INT)
+BEGIN
+	INSERT INTO Reservation(flight)
+	VALUES(flight);
+END //
+
+CREATE PROCEDURE add_passenger(reservation INT, ssn BIGINT, fname VARCHAR(32), lname VARCHAR(32), OUT passenger BIGINT)
+BEGIN
+	INSERT INTO Passenger(ssn, fname, lname)
+	VALUES(ssn, fname, lname);
+	SET passenger = ssn;
+END //
+
+DELIMITER ;
 
 /*
 	Setup triggers
@@ -119,3 +138,57 @@ CREATE TABLE Ticket
 /*
 	Insert some data
 */
+
+INSERT INTO ProfitFactor(day, year, factor)
+VALUES
+	("Monday", 2015, 1),
+	("Tuesday", 2015, 1),
+	("Wednesday", 2015, 1),
+	("Thursday", 2015, 1),
+	("Friday", 2015, 1.5),
+	("Saturday", 2015, 2),
+	("Sunday", 2015, 1.5),
+	("Monday", 2016, 1.2),
+	("Tuesday", 2016, 1.2),
+	("Wednesday", 2016, 1.2),
+	("Thursday", 2016, 1.2),
+	("Friday", 2016, 1.8),
+	("Saturday", 2016, 2.3),
+	("Sunday", 2016, 2);
+
+INSERT INTO City(name)
+VALUES
+	("Linköping"),
+	("Jönköping"),
+	("Stockholm"),
+	("Malmö"),
+	("Göteborg"),
+	("Uppsala");
+
+INSERT INTO Route(year, price, start, destination)
+VALUES
+	(
+		2015,
+		800,
+		(SELECT id FROM City WHERE name LIKE "Jönköping"),
+		(SELECT id FROM City WHERE name LIKE "Linköping")		
+	),
+	(
+		2015,
+		1000,
+		(SELECT id FROM City WHERE name LIKE "Uppsala"),
+		(SELECT id FROM City WHERE name LIKE "Linköping")		
+	),
+	(
+		2016,
+		800,
+		(SELECT id FROM City WHERE name LIKE "Göteborg"),
+		(SELECT id FROM City WHERE name LIKE "Jönköping")		
+	);
+
+INSERT INTO Passenger(ssn, fname, lname)
+VALUES
+	(9205225031, "Marcus", "Sneitz"),
+	(9202191780, "Elin", "Arvidsson"),
+	(9407020016, "Erik", "Sneitz");
+
