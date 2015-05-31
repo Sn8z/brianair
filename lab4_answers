@@ -1,0 +1,25 @@
+Lab 4 Project Answers
+Marcus Sneitz(marsn336)
+Erik Sneitz(erisn687)
+
+4c)
+	To protect the data we could encrypt the information so it's not stored in plain text.
+
+4e)
+	- It's more secure to keep all the logic server-side.
+	- It's possible for different types of applications to interact with the database.
+	- All logic is at one place and it's easy to maintain without having to think about what
+	framework and language the front-end uses.
+	- It's easier to scale in size.
+
+9a)
+
+9b)
+
+9c)
+
+9d)
+
+10a)
+
+10c)
