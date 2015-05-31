@@ -12,14 +12,18 @@ Erik Sneitz(erisn687)
 	framework and language the front-end uses.
 	- It's easier to scale in size.
 
-9a)
-
-9b)
-
-9c)
-
-9d)
+9)
+	No, the reservation isn't visible in the other session because it's not commited to disc.
+	We cant modify the reservation since we can't see it at all.
+	
+	To solve this issue we can manually COMMIT the changes directly after a procedure is done, this way
+	we will have the data on disc. If a procedure fails we can do a ROLLBACK which reverts all changes the procedure did.
 
 10a)
+	If we call the create_reservation procedure at the same time from two different sessions and we check the available seats
+	we will get an overbooking since the sessions aren't aware of each others actions. We don't know that there are in fact no 		more seats left since the changes arent yet commited to disc and the session can interact with the same table at the same time.
 
 10c)
+	To avoid these types of problem we can LOCK all the tables that we need in a procedure before we call it and then
+	release them afterwards, this way we dont allow procedures to read from a table that currently is write locked. This means
+	that one of the sessions has to wait for the other before it can proceed but it wont be possible to create overbookings.
