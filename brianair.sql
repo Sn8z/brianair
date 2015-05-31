@@ -134,7 +134,7 @@ BEGIN
 	VALUES(flight, nr_of_passengers);
 	SET reservation = LAST_INSERT_ID();
 	ELSE
-	SIGNAL SQLSTATE '99999'
+	SIGNAL SQLSTATE '13307'
 	SET MESSAGE_TEXT = "Not enough available seats";
 	END IF;
 

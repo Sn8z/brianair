@@ -105,6 +105,13 @@ COMMIT;
 
 START TRANSACTION;
 LOCK TABLES
+Reservation WRITE;
+CALL create_reservation(1, 30, @res);
+UNLOCK TABLES;
+COMMIT;
+
+START TRANSACTION;
+LOCK TABLES
 SearchView READ,
 ProfitFactor READ,
 Reservation READ,
