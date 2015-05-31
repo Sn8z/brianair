@@ -175,8 +175,8 @@ END //
 
 CREATE PROCEDURE add_payment(reservation_id INT, cc_number_in BIGINT, cc_holder VARCHAR(32), expiration_day INT, expiration_month INT)
 BEGIN
-	IF (SELECT COUNT(*) FROM Ticket WHERE reservation = reservation_id) = (SELECT nr_of_passengers FROM Reservation WHERE id = reservation_id) AND (SELECT contact FROM Reservation WHERE id = reservation_id) IS NOT NULL THEN
-	   SET @flight = (SELECT flight FROM Reservation WHERE id = reservation_id);
+	IF (SELECT COUNT(*) FROM Ticket WHERE reservation = reservation_id) = (SELECT nr_of_passengers FROM Reservation AS r1 WHERE id = reservation_id) AND (SELECT contact FROM Reservation AS r2 WHERE id = reservation_id) IS NOT NULL THEN
+	   SET @flight = (SELECT flight FROM Reservation AS r3 WHERE id = reservation_id);
 	   IF (SELECT COUNT(*) FROM PaymentInfo WHERE cc_number = cc_number_in) = 0 THEN
 	      INSERT INTO PaymentInfo(cc_number, cc_holder, expiration_day, expiration_month)
 	      VALUES(cc_number_in, cc_holder, expiration_day, expiration_month);
@@ -232,7 +232,7 @@ BEGIN
 		(
 		SELECT COUNT(*)
 		FROM Ticket
-		WHERE reservation IN (SELECT Reservation.id FROM Reservation WHERE Reservation.flight = flight_id)
+		WHERE reservation IN (SELECT r4.id FROM Reservation AS r4 WHERE r4.flight = flight_id)
 		AND ticket IS NOT NULL
 		)
 	);
@@ -242,16 +242,16 @@ CREATE FUNCTION calc_price(flight_id INT, nr_of_passengers INT)
 RETURNS INT
 BEGIN
 	RETURN(
-		(SELECT price FROM Route WHERE id = 
-			(SELECT route FROM WeeklyFlight WHERE id = 
-				(SELECT weekly_flight FROM Flight WHERE id = flight_id)))
+		(SELECT price FROM Route AS route1 WHERE id = 
+			(SELECT route FROM WeeklyFlight AS wf1 WHERE id = 
+				(SELECT weekly_flight FROM Flight AS f1 WHERE id = flight_id)))
 		*(SELECT factor FROM ProfitFactor WHERE day LIKE 
-			 (SELECT weekday FROM WeeklyFlight WHERE id = 
-			 	 (SELECT weekly_flight FROM Flight WHERE id = flight_id))
+			 (SELECT weekday FROM WeeklyFlight AS wf2 WHERE id = 
+			 	 (SELECT weekly_flight FROM Flight AS f2 WHERE id = flight_id))
 				AND year = (
-				    SELECT year FROM Route WHERE id = (
-				    	   SELECT route FROM WeeklyFlight WHERE id = (
-					   	  SELECT weekly_flight FROM Flight WHERE id = flight_id))))
+				    SELECT year FROM Route route2 WHERE id = (
+				    	   SELECT route FROM WeeklyFlight AS wf3 WHERE id = (
+					   	  SELECT weekly_flight FROM Flight AS f3 WHERE id = flight_id))))
 	        *(occupied_seats(flight_id)+1)/60
 		*nr_of_passengers
 	);
